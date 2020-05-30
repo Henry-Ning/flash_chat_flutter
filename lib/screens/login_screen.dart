@@ -1,7 +1,8 @@
+import 'package:flash_chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/components/rounded_button.dart';
 import 'package:flash_chat/constants.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
@@ -11,6 +12,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _auth = FirebaseAuth.instance;
+  String email;
+  String password;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.black,
               ),
               onChanged: (value) {
-                //Do something with the user input.
+                email = value;
               },
               decoration: kTextFieldDecoration.copyWith(
                   hintText: 'Enter your email'),
@@ -53,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.black,
               ),
               onChanged: (value) {
-                //Do something with the user input.
+                password = value;
               },
               decoration: kTextFieldDecoration.copyWith(
                   hintText: 'Enter your password'),
@@ -64,8 +69,15 @@ class _LoginScreenState extends State<LoginScreen> {
             RoundedButton(
               colour: Colors.lightBlueAccent,
               title: 'Log In',
-              onPressed: () {
-                //Implement login functionality.
+              onPressed: () async {
+                try {
+                  final oldUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
+                  if (oldUser != null) {
+                    Navigator.pushNamed(context, ChatScreen.id);
+                  }
+                } catch (e) {
+                  print(e);
+                }
               },
             ),
           ],
